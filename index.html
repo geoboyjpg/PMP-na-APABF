@@ -210,26 +210,45 @@
         bounds_group.addLayer(layer_LimitesdaAPABF_1);
         map.addLayer(layer_LimitesdaAPABF_1);
         function pop_area_costa_2(feature, layer) {
-            var popupContent = '<table>\
-                    <tr>\
-                        <td colspan="2"><strong>Apoio</strong><br />' + (feature.properties['Apoio'] !== null ? autolinker.link(String(feature.properties['Apoio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2"><strong>APABF</strong><br />' + (feature.properties['APABF'] !== null ? autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2"><strong>IBAMA</strong><br />' + (feature.properties['IBAMA'] !== null ? autolinker.link(String(feature.properties['IBAMA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2"><strong>PMP</strong><br />' + (feature.properties['PMP'] !== null ? autolinker.link(String(feature.properties['PMP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                </table>';
-            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-			layer.on('popupopen', function(e) {
-				addClassToPopupIfMedia(content, e.popup);
-			});
-			layer.bindPopup(content, { maxHeight: 400 });
-        }
+
+    var popupContent = '<table>\
+            <tr>\
+                <td colspan="2"><strong>Apoio</strong><br />' + (feature.properties['Apoio'] !== null ? autolinker.link(String(feature.properties['Apoio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+            </tr>\
+            <tr>\
+                <td colspan="2"><strong>APABF</strong><br />' + (feature.properties['APABF'] !== null ? autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+            </tr>\
+            <tr>\
+                <td colspan="2"><strong>PMP</strong><br />' + (feature.properties['PMP'] !== null ? autolinker.link(String(feature.properties['PMP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+            </tr>\
+        </table>';
+
+    var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+
+    layer.on('popupopen', function(e) {
+        addClassToPopupIfMedia(content, e.popup);
+    });
+
+    // CAPTURA COORDENADA AO CLICAR NO BUFFER
+    layer.on('click', function(e) {
+
+        var lat = e.latlng.lat.toFixed(6);
+        var lng = e.latlng.lng.toFixed(6);
+
+        coordenadaSelecionada = {
+            lat: lat,
+            lng: lng
+        };
+
+        console.log("Coordenada:", lat, lng);
+
+        // Mostra botão
+        document.getElementById('btnWhats').style.display = 'block';
+
+    });
+
+    layer.bindPopup(content, { maxHeight: 400 });
+}
 
         function style_area_costa_2_0(feature) {
             switch(String(feature.properties['id'])) {
@@ -562,6 +581,75 @@ function fecharPopup() {
 </script>
 
 <!-- FIM POPUP-->>
+
+<!-- ComeçoBotão de envio das coordendas-->>
+
+<button id="btnWhats"
+style="
+position:fixed;
+bottom:20px;
+right:20px;
+z-index:9999;
+padding:12px 18px;
+background:#25D366;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+display:none;
+">
+Enviar localização
+</button>
+
+<script>
+
+var coordenadaSelecionada = null;
+
+// Captura clique no mapa
+map.on('click', function(e) {
+
+    var lat = e.latlng.lat.toFixed(6);
+    var lng = e.latlng.lng.toFixed(6);
+
+    coordenadaSelecionada = {
+        lat: lat,
+        lng: lng
+    };
+
+    console.log("Coordenada:", lat, lng);
+
+    // Mostra botão
+    document.getElementById('btnWhats').style.display = 'block';
+});
+
+
+// Botão WhatsApp
+document.getElementById('btnWhats').addEventListener('click', function() {
+
+    if (!coordenadaSelecionada) {
+        alert("Clique no mapa primeiro.");
+        return;
+    }
+
+    var numero = '5548988056580'; // número da APA
+
+    var mensagem =
+        'Olá! Estou enviando uma localização observada:%0A%0A' +
+        'https://maps.google.com/?q=' +
+        coordenadaSelecionada.lat + ',' +
+        coordenadaSelecionada.lng;
+
+    var url =
+        'https://wa.me/' + numero + '?text=' + mensagem;
+
+    window.open(url, '_blank');
+
+});
+
+</script>
+
+<!-- Fim Botão de envio das coordendas-->>
 
     </body>
 </html>
