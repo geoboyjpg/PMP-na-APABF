@@ -209,6 +209,7 @@
         });
         bounds_group.addLayer(layer_LimitesdaAPABF_1);
         map.addLayer(layer_LimitesdaAPABF_1);
+
         function pop_area_costa_2(feature, layer) {
 
     var popupContent = '<table>\
@@ -221,6 +222,14 @@
             <tr>\
                 <td colspan="2"><strong>PMP</strong><br />' + (feature.properties['PMP'] !== null ? autolinker.link(String(feature.properties['PMP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
             </tr>\
+             <tr>\
+        <td colspan="2" style="text-align:center;padding-top:10px;">\
+            <button onclick="abrirPopupEnvio()" \
+            style="padding:8px 12px;cursor:pointer;">\
+                📍 Enviar localização\
+            </button>\
+        </td>\
+    </tr>\
         </table>';
 
     var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -229,23 +238,40 @@
         addClassToPopupIfMedia(content, e.popup);
     });
 
-    // CAPTURA COORDENADA AO CLICAR NO BUFFER
-    layer.on('click', function(e) {
+// CAPTURA COORDENADA AO CLICAR NO BUFFER
+layer.on('click', function(e) {
 
-        var lat = e.latlng.lat.toFixed(6);
-        var lng = e.latlng.lng.toFixed(6);
+    var lat = e.latlng.lat.toFixed(6);
+    var lng = e.latlng.lng.toFixed(6);
 
-        coordenadaSelecionada = {
-            lat: lat,
-            lng: lng
-        };
+    coordenadaSelecionada = {
+        lat: lat,
+        lng: lng
+    };
 
-        console.log("Coordenada:", lat, lng);
+console.log(feature.properties);
 
-        // Mostra botão
-        document.getElementById('btnWhats').style.display = 'block';
+var apoio = feature.properties['Apoio'];
 
-    });
+console.log("Apoio =", apoio);
+
+  if (apoio.includes('UNESC')) {
+    telefoneApoio = '5548991838663';
+}
+else if (apoio.includes('R3')) {
+    telefoneApoio = '5548991160264';
+}
+else if (apoio.includes('Australis')) {
+    telefoneApoio = '5548991164108';
+}
+else if (apoio.includes('UDESC')) {
+    telefoneApoio = '5548991160264';
+}
+
+    console.log("Coordenada:", lat, lng);
+    console.log("Telefone:", telefoneApoio);
+
+});
 
     layer.bindPopup(content, { maxHeight: 400 });
 }
@@ -582,29 +608,10 @@ function fecharPopup() {
 
 <!-- FIM POPUP-->>
 
-<!-- ComeçoBotão de envio das coordendas-->>
-
-<button id="btnWhats"
-style="
-position:fixed;
-bottom:20px;
-right:20px;
-z-index:9999;
-padding:12px 18px;
-background:#25D366;
-color:white;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-display:none;
-">
-Enviar localização
-</button>
-
 <script>
 
 var coordenadaSelecionada = null;
+var telefoneApoio = null;
 
 // Captura clique no mapa
 map.on('click', function(e) {
@@ -619,23 +626,105 @@ map.on('click', function(e) {
 
     console.log("Coordenada:", lat, lng);
 
-    // Mostra botão
-    document.getElementById('btnWhats').style.display = 'block';
 });
 
-
-// Botão WhatsApp
-document.getElementById('btnWhats').addEventListener('click', function() {
+function abrirPopupEnvio() {
 
     if (!coordenadaSelecionada) {
-        alert("Clique no mapa primeiro.");
+        alert("Clique em um local do mapa primeiro.");
         return;
     }
 
-    var numero = '5548988056580'; // número da APA
+    document.getElementById('popupEnvio').style.display = 'block';
+}
+
+function fecharPopupEnvio() {
+
+    document.getElementById('popupEnvio').style.display = 'none';
+}
+
+</script>
+
+<!--Começo de envio das coordenadas-->
+
+<div id="popupEnvio" style="
+display:none;
+position:fixed;
+z-index:10000;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+">
+
+<div style="
+background:white;
+width:90%;
+max-width:500px;
+margin:10% auto;
+padding:25px;
+border-radius:12px;
+text-align:center;
+font-family:Arial,sans-serif;
+">
+
+<h3>Compartilhar localização</h3>
+
+<p>
+A localização selecionada será anexada automaticamente à mensagem.
+</p>
+
+<p>
+Escolha para qual instituição deseja encaminhar a ocorrência:
+</p>
+
+<button id="btnAPA" style="
+background:#25D366;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+">
+Enviar para APABF
+</button>
+
+<button id="btnApoio" style="
+background:#146666;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+">
+Enviar para Entidade de Apoio
+</button>
+
+<br><br>
+
+<button onclick="fecharPopupEnvio()" style="
+background:#999;
+color:white;
+border:none;
+padding:10px 18px;
+border-radius:8px;
+cursor:pointer;
+">
+Cancelar
+</button>
+
+</div>
+
+<script>
+document.getElementById('btnAPA').addEventListener('click', function() {
+
+    var numero = '5548988056580';
 
     var mensagem =
-        'Olá! Estou enviando uma localização observada:%0A%0A' +
+        'Olá! Gostaria de comunicar uma ocorrência observada na área monitorada pelo PMP: %0A%0A' +
         'https://maps.google.com/?q=' +
         coordenadaSelecionada.lat + ',' +
         coordenadaSelecionada.lng;
@@ -645,11 +734,32 @@ document.getElementById('btnWhats').addEventListener('click', function() {
 
     window.open(url, '_blank');
 
+    fecharPopupEnvio();
+
+});
+
+document.getElementById('btnApoio').addEventListener('click', function() {
+
+    if (!telefoneApoio) {
+        alert("Nenhuma entidade de apoio foi encontrada para esta área.");
+        return;
+    }
+
+    var mensagem =
+        'Olá! Gostaria de comunicar uma ocorrência observada na área monitorada pelo PMP: %0A%0A' +
+        'https://maps.google.com/?q=' +
+        coordenadaSelecionada.lat + ',' +
+        coordenadaSelecionada.lng;
+
+    var url =
+        'https://wa.me/' + telefoneApoio + '?text=' + mensagem;
+
+    window.open(url, '_blank');
+
+    fecharPopupEnvio();
+
 });
 
 </script>
-
-<!-- Fim Botão de envio das coordendas-->>
-
     </body>
 </html>
