@@ -515,17 +515,11 @@ else if (apoio.includes('UDESC')) {
 <div id="popupInicial" style="
     display:none;
     position:fixed;
+    inset:0;
     z-index:9999;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
     background:rgba(0,0,0,0.6);
-
-    display:flex;
     justify-content:center;
     align-items:center;
-
     padding:20px;
     box-sizing:border-box;
 ">
@@ -535,14 +529,12 @@ else if (apoio.includes('UDESC')) {
     background:white;
     width:100%;
     max-width:700px;
-
     max-height:90vh;
     overflow-y:auto;
-
     padding:30px;
     border-radius:14px;
-    font-family:Arial, sans-serif;
-    box-shadow:0 0 20px rgba(0,0,0,0.3);
+    font-family:Arial,sans-serif;
+    box-shadow:0 0 20px rgba(0,0,0,.3);
     line-height:1.6;
     box-sizing:border-box;
 ">
@@ -622,7 +614,7 @@ else if (apoio.includes('UDESC')) {
 <script>
 
 window.onload = function() {
-    document.getElementById("popupInicial").style.display = "block";
+    document.getElementById("popupInicial").style.display = "flex";
 }
 
 // Variável para armazenar o marcador
