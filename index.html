@@ -108,25 +108,11 @@
                 popup._contentNode.classList.remove('media');
             }
         }
-        var zoomControl = L.control.zoom({
-            position: 'topleft'
-        }).addTo(map);
-      var locateControl = L.control.locate({
-    setView: 'once',
-    flyTo: true,
-    keepCurrentZoomLevel: true,
+       var locateControl = L.control.locate({
     locateOptions: {
-        enableHighAccuracy: true
+        maxZoom: 19
     }
 }).addTo(map);
-map.on('locationfound', function(e) {
-
-    map.flyTo(e.latlng, 16, {
-        animate: true,
-        duration: 2
-    });
-
-});
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
             map.setMaxBounds(map.getBounds());
@@ -652,13 +638,11 @@ function fecharPopup() {
 
     document.getElementById("popupInicial").style.display = "none";
 
-    // Aguarda o mapa aparecer corretamente
     setTimeout(function () {
 
         map.invalidateSize();
 
-        // Aciona a localização do próprio QGIS2Web
-        locateControl.start();
+        document.querySelector(".leaflet-control-locate a").click();
 
     }, 300);
 
