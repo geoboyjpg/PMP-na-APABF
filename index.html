@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -112,11 +112,11 @@
             position: 'topleft'
         }).addTo(map);
       var locateControl = L.control.locate({
-    setView: false,          // Não centraliza automaticamente
-    flyTo: true,             // Se suportado pela versão do plugin
+    setView: 'once',
+    flyTo: true,
+    keepCurrentZoomLevel: true,
     locateOptions: {
-        enableHighAccuracy: true,
-        maxZoom: 19
+        enableHighAccuracy: true
     }
 }).addTo(map);
 map.on('locationfound', function(e) {
@@ -521,20 +521,30 @@ else if (apoio.includes('UDESC')) {
     width:100%;
     height:100%;
     background:rgba(0,0,0,0.6);
-    overflow:auto;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+    box-sizing:border-box;
 ">
 
 ```
 <div style="
     background:white;
-    width:90%;
+    width:100%;
     max-width:700px;
-    margin:4% auto;
+
+    max-height:90vh;
+    overflow-y:auto;
+
     padding:30px;
     border-radius:14px;
     font-family:Arial, sans-serif;
     box-shadow:0 0 20px rgba(0,0,0,0.3);
     line-height:1.6;
+    box-sizing:border-box;
 ">
 
     <h2 style="
