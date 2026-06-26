@@ -111,7 +111,22 @@
         var zoomControl = L.control.zoom({
             position: 'topleft'
         }).addTo(map);
-        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+      var locateControl = L.control.locate({
+    setView: false,          // Não centraliza automaticamente
+    flyTo: true,             // Se suportado pela versão do plugin
+    locateOptions: {
+        enableHighAccuracy: true,
+        maxZoom: 19
+    }
+}).addTo(map);
+map.on('locationfound', function(e) {
+
+    map.flyTo(e.latlng, 16, {
+        animate: true,
+        duration: 2
+    });
+
+});
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
             map.setMaxBounds(map.getBounds());
@@ -600,8 +615,51 @@ window.onload = function() {
     document.getElementById("popupInicial").style.display = "block";
 }
 
+// Variável para armazenar o marcador
+var marcadorUsuario = null;
+var circuloPrecisao = null;
+
+// ...
+
+if (marcadorUsuario) {
+    map.removeLayer(marcadorUsuario);
+}
+
+if (circuloPrecisao) {
+    map.removeLayer(circuloPrecisao);
+}
+
+marcadorUsuario = L.circleMarker([latitude, longitude], {
+    radius: 8,
+    fillColor: "#2196F3",
+    color: "#ffffff",
+    weight: 3,
+    opacity: 1,
+    fillOpacity: 1
+}).addTo(map);
+
+circuloPrecisao = L.circle([latitude, longitude], {
+    radius: posicao.coords.accuracy,
+    color: "#2196F3",
+    fillColor: "#2196F3",
+    fillOpacity: 0.15,
+    weight: 1
+}).addTo(map);
+
 function fecharPopup() {
+
     document.getElementById("popupInicial").style.display = "none";
+
+    // Aguarda o mapa aparecer corretamente
+    setTimeout(function () {
+
+        map.invalidateSize();
+
+        // Aciona a localização do próprio QGIS2Web
+        locateControl.start();
+
+    }, 300);
+
 }
 
 </script>
