@@ -136,45 +136,6 @@
                     <tr>\
                         <td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['area'] !== null ? autolinker.link(String(feature.properties['area']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['PERÍMETRO'] !== null ? autolinker.link(String(feature.properties['PERÍMETRO']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['CODIGO'] !== null ? autolinker.link(String(feature.properties['CODIGO']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['NM_ILHA'] !== null ? autolinker.link(String(feature.properties['NM_ILHA']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['NM_MUN'] !== null ? autolinker.link(String(feature.properties['NM_MUN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['AREA_KM2'] !== null ? autolinker.link(String(feature.properties['AREA_KM2']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['AREA_M2'] !== null ? autolinker.link(String(feature.properties['AREA_M2']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['LATITUDE'] !== null ? autolinker.link(String(feature.properties['LATITUDE']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['LONGITUDE'] !== null ? autolinker.link(String(feature.properties['LONGITUDE']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['LOCALIDADE'] !== null ? autolinker.link(String(feature.properties['LOCALIDADE']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['PERT_UC'] !== null ? autolinker.link(String(feature.properties['PERT_UC']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(String(feature.properties['layer']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['path'] !== null ? autolinker.link(String(feature.properties['path']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
 			layer.on('popupopen', function(e) {
@@ -211,26 +172,73 @@
         bounds_group.addLayer(layer_LimitesdaAPABF_1);
         map.addLayer(layer_LimitesdaAPABF_1);
 
-        function pop_area_costa_2(feature, layer) {
+function pop_area_costa_2(feature, layer) {
+
+    layer.on('click', function(e) {
+    coordenadaSelecionada = e.latlng;
+});
+
+    // =====================================================
+    // POPUP ESPECIAL - ÁREA FORA DO PMP (ID = 6)
+    // =====================================================
+    if (String(feature.properties['id']) === '6') {
+
+        var popupContent = `
+            <h3>Área sem atendimento direto pelo PMP</h3>
+
+            <p>
+                Esta área não é atendida diretamente pelas Instituições Executoras
+                do Projeto de Monitoramento de Praias (PMP).
+            </p>
+
+            <p>
+                Caso observe um animal marinho vivo, morto ou debilitado,
+                você poderá encaminhar a localização para a equipe da
+                APA da Baleia Franca.
+            </p>
+
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="abrirPopupEnvioAPA()"
+                        style="padding:8px 12px; cursor:pointer;">
+                    📍 Enviar localização
+                </button>
+            </div>
+        `;
+
+        layer.bindPopup(popupContent, { maxHeight: 400 });
+        return;
+    }
+
+    // =====================================================
+    // POPUP PADRÃO DO PMP
+    // =====================================================
 
     var popupContent = '<table>\
             <tr>\
-                <td colspan="2"><strong>Apoio</strong><br />' + (feature.properties['Apoio'] !== null ? autolinker.link(String(feature.properties['Apoio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                <td colspan="2"><strong>Instituições Executoras</strong><br />' +
+                (feature.properties['Instituições Executoras'] !== null ?
+                autolinker.link(String(feature.properties['Instituições Executoras']).replace(/'/g, '\'').toLocaleString()) : '') +
+                '</td>\
             </tr>\
             <tr>\
-                <td colspan="2"><strong>APABF</strong><br />' + (feature.properties['APABF'] !== null ? autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                <td colspan="2"><strong>APABF</strong><br />' +
+                (feature.properties['APABF'] !== null ?
+                autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') +
+                '</td>\
             </tr>\
             <tr>\
-                <td colspan="2"><strong>PMP</strong><br />' + (feature.properties['PMP'] !== null ? autolinker.link(String(feature.properties['PMP']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                <td colspan="2"><strong>PMP</strong><br />' +
+                (feature.properties['PMP'] !== null ?
+                autolinker.link(String(feature.properties['PMP']).replace(/'/g, '\'').toLocaleString()) : '') +
+                '</td>\
             </tr>\
-             <tr>\
-        <td colspan="2" style="text-align:center;padding-top:10px;">\
-            <button onclick="abrirPopupEnvio()" \
-            style="padding:8px 12px;cursor:pointer;">\
-                📍 Enviar localização\
-            </button>\
-        </td>\
-    </tr>\
+            <tr>\
+                <td colspan="2" style="text-align:center;padding-top:10px;">\
+                    <button onclick="abrirPopupEnvio()" style="padding:8px 12px;cursor:pointer;">\
+                        📍 Enviar localização\
+                    </button>\
+                </td>\
+            </tr>\
         </table>';
 
     var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -239,42 +247,30 @@
         addClassToPopupIfMedia(content, e.popup);
     });
 
-// CAPTURA COORDENADA AO CLICAR NO BUFFER
-layer.on('click', function(e) {
-
-    var lat = e.latlng.lat.toFixed(6);
-    var lng = e.latlng.lng.toFixed(6);
-
-    coordenadaSelecionada = {
-        lat: lat,
-        lng: lng
-    };
-
-console.log(feature.properties);
-
-var apoio = feature.properties['Apoio'];
-
-console.log("Apoio =", apoio);
-
-  if (apoio.includes('UNESC')) {
-    telefoneApoio = '5548991838663';
-}
-else if (apoio.includes('R3')) {
-    telefoneApoio = '5548991160264';
-}
-else if (apoio.includes('Australis')) {
-    telefoneApoio = '5548991164108';
-}
-else if (apoio.includes('UDESC')) {
-    telefoneApoio = '5548991160264';
-}
-
-    console.log("Coordenada:", lat, lng);
-    console.log("Telefone:", telefoneApoio);
-
-});
-
     layer.bindPopup(content, { maxHeight: 400 });
+
+    
+}
+
+        function abrirPopupEnvioAPA() {
+
+    const telefone = "5548988056580";
+
+    if (!coordenadaSelecionada) {
+        alert("Clique em um local do mapa primeiro.");
+        return;
+    }
+
+    var mensagem =
+        'Olá! Gostaria de comunicar uma ocorrência observada na área da APA da Baleia Franca:%0A%0A' +
+        'https://maps.google.com/?q=' +
+        coordenadaSelecionada.lat + ',' +
+        coordenadaSelecionada.lng;
+
+    var url =
+        'https://wa.me/' + telefone + '?text=' + mensagem;
+
+    window.open(url, '_blank');
 }
 
         function style_area_costa_2_0(feature) {
@@ -340,22 +336,37 @@ else if (apoio.includes('UDESC')) {
             }
                     break;
                 case '5':
-                    return {
-                pane: 'pane_area_costa_2',
-                opacity: 0,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 0,
-                fillColor: 'rgba(118,93,209,1.0)',
-                interactive: true,
-            }
-                    break;
-            }
-        }
+    return {
+        pane: 'pane_area_costa_2',
+        opacity: 0,
+        color: 'rgba(35,35,35,1.0)',
+        dashArray: '',
+        lineCap: 'butt',
+        lineJoin: 'miter',
+        weight: 1.0,
+        fill: true,
+        fillOpacity: 0,
+        fillColor: 'rgba(118,93,209,1.0)',
+        interactive: true,
+    }
+    break;
+
+case '6':
+    return {
+        pane: 'pane_area_costa_2',
+        opacity: 0,
+        color: 'rgba(35,35,35,1.0)',
+        dashArray: '',
+        lineCap: 'butt',
+        lineJoin: 'miter',
+        weight: 1.0,
+        fill: true,
+        fillOpacity: 0,
+        fillColor: 'rgba(29,12,229,1.0)',
+        interactive: true,
+    }
+    break;
+}}
         map.createPane('pane_area_costa_2');
         map.getPane('pane_area_costa_2').style.zIndex = 402;
         map.getPane('pane_area_costa_2').style['mix-blend-mode'] = 'normal';
@@ -376,7 +387,7 @@ else if (apoio.includes('UDESC')) {
                         <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(String(feature.properties['id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['Apoio'] !== null ? autolinker.link(String(feature.properties['Apoio']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['Instituições Executoras'] !== null ? autolinker.link(String(feature.properties['Instituições Executoras']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <td colspan="2">' + (feature.properties['APABF'] !== null ? autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
@@ -655,7 +666,7 @@ function fecharPopup() {
 <script>
 
 var coordenadaSelecionada = null;
-var telefoneApoio = null;
+var telefoneie = null;
 
 // Captura clique no mapa
 map.on('click', function(e) {
@@ -724,7 +735,7 @@ Escolha para qual instituição deseja encaminhar a ocorrência:
 </p>
 
 <button id="btnAPA" style="
-background:#25D366;
+background:#146666;
 color:white;
 border:none;
 padding:12px 20px;
@@ -735,7 +746,7 @@ margin:5px;
 Enviar para APABF
 </button>
 
-<button id="btnApoio" style="
+<button id="btnie" style="
 background:#146666;
 color:white;
 border:none;
@@ -782,9 +793,9 @@ document.getElementById('btnAPA').addEventListener('click', function() {
 
 });
 
-document.getElementById('btnApoio').addEventListener('click', function() {
+document.getElementById('btnie').addEventListener('click', function() {
 
-    if (!telefoneApoio) {
+    if (!telefoneie) {
         alert("Nenhuma entidade de apoio foi encontrada para esta área.");
         return;
     }
@@ -796,7 +807,7 @@ document.getElementById('btnApoio').addEventListener('click', function() {
         coordenadaSelecionada.lng;
 
     var url =
-        'https://wa.me/' + telefoneApoio + '?text=' + mensagem;
+        'https://wa.me/' + telefoneie + '?text=' + mensagem;
 
     window.open(url, '_blank');
 
