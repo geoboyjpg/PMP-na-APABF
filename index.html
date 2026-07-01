@@ -175,8 +175,31 @@
 function pop_area_costa_2(feature, layer) {
 
     layer.on('click', function(e) {
-    coordenadaSelecionada = e.latlng;
-});
+
+        coordenadaSelecionada = e.latlng;
+
+        telefoneie = null; // limpa o telefone anterior
+
+        var IE = feature.properties['Instituição Executora'];
+
+        if (IE && IE.includes('UNESC')) {
+            telefoneie = '5548991838663';
+        }
+        else if (IE && IE.includes('R3')) {
+            telefoneie = '5548991045707';
+        }
+        else if (IE && IE.includes('Australis')) {
+            telefoneie = '5548991164108';
+        }
+        else if (IE && IE.includes('UDESC')) {
+            telefoneie = '5548991160264';
+        }
+
+        console.log("Telefone IE:", telefoneie);
+
+    });
+
+    // restante da função...
 
     // =====================================================
     // POPUP ESPECIAL - ÁREA FORA DO PMP (ID = 6)
