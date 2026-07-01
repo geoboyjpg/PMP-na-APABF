@@ -215,9 +215,9 @@ function pop_area_costa_2(feature, layer) {
 
     var popupContent = '<table>\
             <tr>\
-                <td colspan="2"><strong>Instituições Executoras</strong><br />' +
-                (feature.properties['Instituições Executoras'] !== null ?
-                autolinker.link(String(feature.properties['Instituições Executoras']).replace(/'/g, '\'').toLocaleString()) : '') +
+                <td colspan="2"><strong>Instituição Executora</strong><br />' +
+                (feature.properties['Instituição Executora'] !== null ?
+                autolinker.link(String(feature.properties['Instituição Executora']).replace(/'/g, '\'').toLocaleString()) : '') +
                 '</td>\
             </tr>\
             <tr>\
@@ -387,7 +387,7 @@ case '6':
                         <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(String(feature.properties['id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['Instituições Executoras'] !== null ? autolinker.link(String(feature.properties['Instituições Executoras']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['Instituição Executora'] !== null ? autolinker.link(String(feature.properties['Instituição Executora']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <td colspan="2">' + (feature.properties['APABF'] !== null ? autolinker.link(String(feature.properties['APABF']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
@@ -755,7 +755,7 @@ border-radius:8px;
 cursor:pointer;
 margin:5px;
 ">
-Enviar para Entidade de Apoio
+Enviar para Instituição Executora
 </button>
 
 <br><br>
@@ -796,7 +796,7 @@ document.getElementById('btnAPA').addEventListener('click', function() {
 document.getElementById('btnie').addEventListener('click', function() {
 
     if (!telefoneie) {
-        alert("Nenhuma entidade de apoio foi encontrada para esta área.");
+        alert("Nenhuma instituição executora foi encontrada para esta área.");
         return;
     }
 
