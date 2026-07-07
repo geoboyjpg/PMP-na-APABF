@@ -19,12 +19,138 @@
             padding: 0;
             margin: 0;
         }
+
+        .help-control {
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            display: block;
+            font: bold 18px Arial, sans-serif;
+            line-height: 26px;
+            width: 26px;
+            height: 26px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .leaflet-touch .help-control {
+            line-height: 30px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .help-control:hover {
+            background: #f4f4f4;
+        }
+
+        #popupAjuda {
+            display: none;
+            position: fixed;
+            z-index: 10001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .popup-ajuda-conteudo {
+            background: white;
+            width: 90%;
+            max-width: 560px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            border-radius: 12px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        .popup-ajuda-conteudo h3 {
+            margin: 0 0 12px;
+            color: #146666;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .popup-ajuda-conteudo p,
+        .popup-ajuda-conteudo li {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .popup-ajuda-conteudo ul {
+            padding-left: 20px;
+        }
+
+        .popup-ajuda-rodape {
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        #popupAjuda .popup-ajuda-rodape a,
+        #popupAjuda .popup-ajuda-rodape a:link,
+        #popupAjuda .popup-ajuda-rodape a:visited,
+        #popupAjuda .popup-ajuda-rodape a:hover,
+        #popupAjuda .popup-ajuda-rodape a:active {
+            color: #1592CF !important;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .popup-ajuda-fechar {
+            float: right;
+            background: transparent;
+            border: none;
+            color: #ff0000;
+            cursor: pointer;
+            font-size: 24px;
+            line-height: 24px;
+        }
+
         </style>
         <title></title>
     </head>
     <body>
         <div id="map">
         </div>
+
+        <div id="popupAjuda" onclick="fecharPopupAjuda(event)">
+            <div class="popup-ajuda-conteudo">
+                <button class="popup-ajuda-fechar" type="button" onclick="fecharPopupAjuda()">x</button>
+
+                <h3>Como utilizar o mapa</h3>
+
+                <p>
+                    Este mapa apresenta as <strong>áreas monitoradas</strong> e as <strong>instituições responsáveis</strong> pelo Projeto de Monitoramento de Praias da <strong>APABF</strong>.
+                </p>
+
+                <ul>
+                    <li>Utilize os botões <strong>+</strong> e <strong>−</strong> para aproximar ou afastar o mapa.</li>
+                    <li>Clique no botão de <strong>localização</strong> para centralizar o mapa na sua posição atual.</li>
+                    <li>Selecione uma <strong>área do mapa</strong> para visualizar informações e os contatos da instituição responsável.</li>
+                    <li>Após selecionar uma área, você poderá compartilhar uma <strong>ocorrência</strong> diretamente com a <strong>APABF</strong> ou com a <strong>instituição executora</strong> correspondente.</li>
+                    <li>Quando disponível, utilize o <strong>painel de camadas</strong> para ativar ou desativar as informações exibidas no mapa.</li>
+                </ul>
+
+                <div class="popup-ajuda-rodape">
+                    Encontrou algum erro ou tem alguma sugestão?<br>
+                    Entre em contato pelo e-mail:
+                    <a href="mailto:henrique.rodrigues.bolsista@icmbio.gov.br?subject=Sugestão%20ou%20erro%20no%20mapa%20PMP">henrique.rodrigues.bolsista@icmbio.gov.br</a>
+                </div>
+            </div>
+        </div>
+
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/L.Control.Layers.Tree.min.js"></script>
@@ -42,9 +168,10 @@
         <script src="data/TrechosSetores_3.js"></script>
         <script>
         var map = L.map('map', {
-            zoomControl:false, maxZoom:16, minZoom:9
+            zoomControl:true, maxZoom:16, minZoom:9
         }).fitBounds([[-28.866124368009906,-49.68427091788413],[-27.803167325748905,-47.989806732573285]]);
         var hash = new L.Hash(map);
+
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         // remove popup's row if "visible-with-data"
@@ -113,6 +240,31 @@
         maxZoom: 19
     }
 }).addTo(map);
+
+        var HelpControl = L.Control.extend({
+            options: {
+                position: 'topleft'
+            },
+
+            onAdd: function () {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                var button = L.DomUtil.create('a', 'help-control', container);
+                button.innerHTML = '?';
+                button.href = '#';
+                button.title = 'Ajuda';
+                button.setAttribute('aria-label', 'Abrir ajuda do mapa');
+
+                L.DomEvent.disableClickPropagation(container);
+                L.DomEvent.on(button, 'click', function (event) {
+                    L.DomEvent.preventDefault(event);
+                    document.getElementById('popupAjuda').style.display = 'flex';
+                });
+
+                return container;
+            }
+        });
+
+        map.addControl(new HelpControl());
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
             map.setMaxBounds(map.getBounds());
@@ -131,6 +283,9 @@
         });
         layer_GoogleSatellite_0;
         map.addLayer(layer_GoogleSatellite_0);
+
+        
+
         function pop_LimitesdaAPABF_1(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
@@ -641,33 +796,6 @@ window.onload = function() {
 var marcadorUsuario = null;
 var circuloPrecisao = null;
 
-// ...
-
-if (marcadorUsuario) {
-    map.removeLayer(marcadorUsuario);
-}
-
-if (circuloPrecisao) {
-    map.removeLayer(circuloPrecisao);
-}
-
-marcadorUsuario = L.circleMarker([latitude, longitude], {
-    radius: 8,
-    fillColor: "#2196F3",
-    color: "#ffffff",
-    weight: 3,
-    opacity: 1,
-    fillOpacity: 1
-}).addTo(map);
-
-circuloPrecisao = L.circle([latitude, longitude], {
-    radius: posicao.coords.accuracy,
-    color: "#2196F3",
-    fillColor: "#2196F3",
-    fillOpacity: 0.15,
-    weight: 1
-}).addTo(map);
-
 function fecharPopup() {
 
     document.getElementById("popupInicial").style.display = "none";
@@ -676,10 +804,70 @@ function fecharPopup() {
 
         map.invalidateSize();
 
-        document.querySelector(".leaflet-control-locate a").click();
+        localizarUsuarioAoEntrar();
 
     }, 300);
 
+}
+
+function localizarUsuarioAoEntrar() {
+
+    function aoEncontrarLocalizacao(posicao) {
+
+        map.off('locationerror', aoFalharLocalizacao);
+
+        var latitude = posicao.latlng.lat;
+        var longitude = posicao.latlng.lng;
+
+        if (marcadorUsuario) {
+            map.removeLayer(marcadorUsuario);
+        }
+
+        if (circuloPrecisao) {
+            map.removeLayer(circuloPrecisao);
+        }
+
+        marcadorUsuario = L.circleMarker([latitude, longitude], {
+            radius: 8,
+            fillColor: "#2196F3",
+            color: "#ffffff",
+            weight: 3,
+            opacity: 1,
+            fillOpacity: 1
+        }).addTo(map);
+
+        circuloPrecisao = L.circle([latitude, longitude], {
+            radius: posicao.accuracy,
+            color: "#2196F3",
+            fillColor: "#2196F3",
+            fillOpacity: 0.15,
+            weight: 1
+        }).addTo(map);
+
+        map.flyTo([latitude, longitude], 15, {
+            animate: true,
+            duration: 2.5
+        });
+
+        map.stopLocate();
+    }
+
+    function aoFalharLocalizacao() {
+
+        map.off('locationfound', aoEncontrarLocalizacao);
+        alert("Não foi possível acessar sua localização. Verifique a permissão de localização do navegador.");
+    }
+
+    map.once('locationfound', aoEncontrarLocalizacao);
+    map.once('locationerror', aoFalharLocalizacao);
+
+    map.locate({
+        setView: false,
+        watch: false,
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
+    });
 }
 
 </script>
@@ -720,6 +908,22 @@ function fecharPopupEnvio() {
 
     document.getElementById('popupEnvio').style.display = 'none';
 }
+
+function fecharPopupAjuda(event) {
+
+    if (event && event.target.id !== 'popupAjuda') {
+        return;
+    }
+
+    document.getElementById('popupAjuda').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(event) {
+
+    if (event.key === 'Escape') {
+        fecharPopupAjuda();
+    }
+});
 
 </script>
 
@@ -839,5 +1043,7 @@ document.getElementById('btnie').addEventListener('click', function() {
 });
 
 </script>
+
     </body>
+
 </html>
