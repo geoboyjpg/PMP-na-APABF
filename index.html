@@ -118,6 +118,16 @@
             line-height: 24px;
         }
 
+        .popup-versao{
+    margin-top:12px;
+    padding-top:8px;
+    border-top:1px solid #ddd;
+    text-align:center;
+    font-size:11px;
+    color:#000000;
+    font-style:italic;
+}
+
         </style>
         <title></title>
     </head>
@@ -147,6 +157,9 @@
                     Encontrou algum erro ou tem alguma sugestão?<br>
                     Entre em contato pelo e-mail:
                     <a href="mailto:henrique.rodrigues.bolsista@icmbio.gov.br?subject=Sugestão%20ou%20erro%20no%20mapa%20PMP">henrique.rodrigues.bolsista@icmbio.gov.br</a>
+                <div class="popup-versao">
+        Versão 1.0 • Atualizado em julho de 2026
+    </div>
                 </div>
             </div>
         </div>
@@ -800,13 +813,9 @@ function fecharPopup() {
 
     document.getElementById("popupInicial").style.display = "none";
 
-    setTimeout(function () {
+    map.invalidateSize();
 
-        map.invalidateSize();
-
-        localizarUsuarioAoEntrar();
-
-    }, 300);
+    localizarUsuarioAoEntrar();
 
 }
 
@@ -845,7 +854,6 @@ function localizarUsuarioAoEntrar() {
         }).addTo(map);
 
         map.flyTo([latitude, longitude], 15, {
-            animate: true,
             duration: 2.5
         });
 
